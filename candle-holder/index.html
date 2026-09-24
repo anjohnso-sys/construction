@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Candle Holder: Scale Drawing Steps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;color:#23262b;background:#efece4}
+button{font-family:inherit;cursor:pointer}
+button:disabled{opacity:.35;cursor:default}
+button:focus-visible{outline:3px solid #1864ab;outline-offset:2px}
+.wrap{max-width:1440px;margin:0 auto;padding:24px;display:flex;flex-direction:column;gap:18px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px 24px}
+.kicker{font-size:13px;font-weight:700;letter-spacing:.12em;color:#8a5a2b}
+h1{margin:4px 0 0;font-family:Fraunces,Georgia,serif;font-size:clamp(24px,3vw,34px);font-weight:700;color:#1f2227}
+.spec{font-size:15px;color:#4b5058}
+.main{display:grid;grid-template-columns:360px minmax(0,1fr);gap:24px;align-items:start}
+.side{display:flex;flex-direction:column;gap:14px}
+.card{background:#fff;border-radius:14px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.stepcard{padding:22px;display:flex;flex-direction:column;gap:12px;min-height:520px}
+.head{display:flex;align-items:center;gap:12px}
+.num{width:48px;height:48px;border-radius:24px;background:#c2410c;color:#fff;display:flex;align-items:center;justify-content:center;font-family:Fraunces,Georgia,serif;font-size:24px;font-weight:700;flex-shrink:0}
+.of{font-size:12px;font-weight:700;letter-spacing:.1em;color:#6b7280}
+h2{margin:0;font-family:Fraunces,Georgia,serif;font-size:24px;font-weight:700;color:#1f2227;line-height:1.15}
+ol{margin:4px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:9px;font-size:16px;line-height:1.4;color:#2b2d31}
+.tips{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.count{background:#e7f1fb;color:#0f4c85;border-radius:10px;padding:10px 14px;font-size:15px;font-weight:700}
+.check{background:#fdf1e7;color:#7a3208;border-radius:10px;padding:10px 14px;font-size:15px;line-height:1.35}
+.cheat{padding:16px 20px}
+.cheat .of{margin-bottom:8px}
+.cheatgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px;font-size:14px}
+.draw{display:flex;flex-direction:column;gap:14px;min-width:0}
+.svgcard{padding:12px}
+.svgcard svg{display:block;width:100%;height:auto}
+.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.btn{height:48px;padding:0 20px;border-radius:10px;border:1.5px solid #c9c3b6;background:#fff;font-size:16px;font-weight:700;color:#2b2d31}
+.btn.primary{border:none;background:#c2410c;color:#fff;padding:0 26px}
+.dots{display:flex;gap:6px;margin-left:auto;align-items:center;flex-wrap:wrap}
+.dot{width:32px;height:32px;border-radius:16px;font-size:12px;font-weight:700;padding:0;border:1.5px solid #c9c3b6;background:#fff;color:#4b5058}
+.dot.past{background:#f3ddd0}
+.dot.active{background:#c2410c;border-color:#c2410c;color:#fff}
+.keys{font-size:13px;color:#6b7280}
+@media (max-width:1000px){.main{grid-template-columns:minmax(0,1fr)}.stepcard{min-height:0}.draw{order:-1}.dots{margin-left:0}}
+/* drawing styles */
+.paper{fill:#fffdf6}
+.gl{stroke:#c9dcea;stroke-width:1}
+.ln{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ol{stroke-width:2.6}
+.hd{stroke-width:1.9;stroke-dasharray:7 5}
+.cl{stroke-width:1.3;stroke-dasharray:9 6}
+.dm{stroke-width:1.1}
+.cn{stroke-width:1}
+.hp{stroke:#1864ab;stroke-width:1.4;fill:none}
+.ahp{fill:#1864ab}
+.shp{fill:#74c0fc;fill-opacity:.45;stroke:#1864ab;stroke-width:1.5}
+.dot{fill:#c2410c}
+text{font-family:'Atkinson Hyperlegible',system-ui,sans-serif;paint-order:stroke;stroke:#fffdf6;stroke-width:4px;stroke-linejoin:round}
+.tx{font-size:13px;font-weight:700}
+.tb{font-size:9px;font-weight:700;letter-spacing:.08em;fill:#6b7280}
+.tv{font-size:13px;font-weight:700;letter-spacing:.1em}
+.tp{font-size:13px;font-weight:700;fill:#1864ab}
+.mid{text-anchor:middle}
+.st{text-anchor:start}
+.end{text-anchor:end}
+.hid{display:none}
+.done .ln{stroke:#2b2d31}
+.done .cn{stroke:#a9b4bf}
+.done .dm{stroke:#2b2d31}
+.done .ah{fill:#2b2d31}
+.done .tx,.done .tv{fill:#2b2d31}
+.done .tmp,.done .hp,.done .ahp,.done .tp,.done .shp,.done .dot{display:none}
+.now .ln{stroke:#c2410c}
+.now .cn{stroke:#e8956f}
+.now .hp{stroke:#1864ab}
+.now .ah{fill:#c2410c}
+.now .tx,.now .tv{fill:#c2410c}
+.now .dr{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 2s linear forwards}
+.now .fd{opacity:0;animation:fade .7s ease forwards}
+.now .d0{animation-delay:.15s}
+.now .d1{animation-delay:.8s}
+.now .d2{animation-delay:1.5s}
+.now .d3{animation-delay:2.2s}
+.now .d4{animation-delay:2.9s}
+.now .d5{animation-delay:3.6s}
+.now .d6{animation-delay:4.3s}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="kicker">CONSTRUCTION PROJECT</div>
+      <h1>How to draw your candle holder to scale</h1>
+    </div>
+    <div class="spec">Board: 10" long x 3" wide x 3/4" thick, 3 holes, 2" wide, 3/8" deep</div>
+  </header>
+  <main class="main">
+    <section class="side">
+      <div class="card stepcard" aria-live="polite">
+        <div class="head">
+          <div class="num" id="num">0</div>
+          <div>
+            <div class="of" id="of">BEFORE YOU START</div>
+            <h2 id="title"></h2>
+          </div>
+        </div>
+        <ol id="lines"></ol>
+        <div class="tips">
+          <div class="count" id="count"></div>
+          <div class="check" id="check"></div>
+        </div>
+      </div>
+      <div class="card cheat">
+        <div class="of">CHEAT SHEET: 1 SQUARE = 1/2 INCH</div>
+        <div class="cheatgrid">
+          <div>10" = <strong>20 squares</strong></div>
+          <div>3" = <strong>6 squares</strong></div>
+          <div>2" = <strong>4 squares</strong></div>
+          <div>1" = <strong>2 squares</strong></div>
+          <div>3/4" = <strong>1 1/2 squares</strong></div>
+          <div>3/8" = <strong>3/4 square</strong></div>
+        </div>
+      </div>
+    </section>
+    <section class="draw">
+      <div class="card svgcard" role="img" aria-label="Grid paper showing the working drawing being built step by step">
+<svg viewBox="0 0 975 575" width="975" height="575" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="975" height="575" class="paper"></rect>
+<line x1="0" y1="0" x2="0" y2="575" class="gl"></line>
+<line x1="25" y1="0" x2="25" y2="575" class="gl"></line>
+<line x1="50" y1="0" x2="50" y2="575" class="gl"></line>
+<line x1="75" y1="0" x2="75" y2="575" class="gl"></line>
+<line x1="100" y1="0" x2="100" y2="575" class="gl"></line>
+<line x1="125" y1="0" x2="125" y2="575" class="gl"></line>
+<line x1="150" y1="0" x2="150" y2="575" class="gl"></line>
+<line x1="175" y1="0" x2="175" y2="575" class="gl"></line>
+<line x1="200" y1="0" x2="200" y2="575" class="gl"></line>
+<line x1="225" y1="0" x2="225" y2="575" class="gl"></line>
+<line x1="250" y1="0" x2="250" y2="575" class="gl"></line>
+<line x1="275" y1="0" x2="275" y2="575" class="gl"></line>
+<line x1="300" y1="0" x2="300" y2="575" class="gl"></line>
+<line x1="325" y1="0" x2="325" y2="575" class="gl"></line>
+<line x1="350" y1="0" x2="350" y2="575" class="gl"></line>
+<line x1="375" y1="0" x2="375" y2="575" class="gl"></line>
+<line x1="400" y1="0" x2="400" y2="575" class="gl"></line>
+<line x1="425" y1="0" x2="425" y2="575" class="gl"></line>
+<line x1="450" y1="0" x2="450" y2="575" class="gl"></line>
+<line x1="475" y1="0" x2="475" y2="575" class="gl"></line>
+<line x1="500" y1="0" x2="500" y2="575" class="gl"></line>
+<line x1="525" y1="0" x2="525" y2="575" class="gl"></line>
+<line x1="550" y1="0" x2="550" y2="575" class="gl"></line>
+<line x1="575" y1="0" x2="575" y2="575" class="gl"></line>
+<line x1="600" y1="0" x2="600" y2="575" class="gl"></line>
+<line x1="625" y1="0" x2="625" y2="575" class="gl"></line>
+<line x1="650" y1="0" x2="650" y2="575" class="gl"></line>
+<line x1="675" y1="0" x2="675" y2="575" class="gl"></line>
+<line x1="700" y1="0" x2="700" y2="575" class="gl"></line>
+<line x1="725" y1="0" x2="725" y2="575" class="gl"></line>
+<line x1="750" y1="0" x2="750" y2="575" class="gl"></line>
+<line x1="775" y1="0" x2="775" y2="575" class="gl"></line>
+<line x1="800" y1="0" x2="800" y2="575" class="gl"></line>
+<line x1="825" y1="0" x2="825" y2="575" class="gl"></line>
+<line x1="850" y1="0" x2="850" y2="575" class="gl"></line>
+<line x1="875" y1="0" x2="875" y2="575" class="gl"></line>
+<line x1="900" y1="0" x2="900" y2="575" class="gl"></line>
+<line x1="925" y1="0" x2="925" y2="575" class="gl"></line>
+<line x1="950" y1="0" x2="950" y2="575" class="gl"></line>
+<line x1="975" y1="0" x2="975" y2="575" class="gl"></line>
+<line x1="0" y1="0" x2="975" y2="0" class="gl"></line>
+<line x1="0" y1="25" x2="975" y2="25" class="gl"></line>
+<line x1="0" y1="50" x2="975" y2="50" class="gl"></line>
+<line x1="0" y1="75" x2="975" y2="75" class="gl"></line>
+<line x1="0" y1="100" x2="975" y2="100" class="gl"></line>
+<line x1="0" y1="125" x2="975" y2="125" class="gl"></line>
+<line x1="0" y1="150" x2="975" y2="150" class="gl"></line>
+<line x1="0" y1="175" x2="975" y2="175" class="gl"></line>
+<line x1="0" y1="200" x2="975" y2="200" class="gl"></line>
+<line x1="0" y1="225" x2="975" y2="225" class="gl"></line>
+<line x1="0" y1="250" x2="975" y2="250" class="gl"></line>
+<line x1="0" y1="275" x2="975" y2="275" class="gl"></line>
+<line x1="0" y1="300" x2="975" y2="300" class="gl"></line>
+<line x1="0" y1="325" x2="975" y2="325" class="gl"></line>
+<line x1="0" y1="350" x2="975" y2="350" class="gl"></line>
+<line x1="0" y1="375" x2="975" y2="375" class="gl"></line>
+<line x1="0" y1="400" x2="975" y2="400" class="gl"></line>
+<line x1="0" y1="425" x2="975" y2="425" class="gl"></line>
+<line x1="0" y1="450" x2="975" y2="450" class="gl"></line>
+<line x1="0" y1="475" x2="975" y2="475" class="gl"></line>
+<line x1="0" y1="500" x2="975" y2="500" class="gl"></line>
+<line x1="0" y1="525" x2="975" y2="525" class="gl"></line>
+<line x1="0" y1="550" x2="975" y2="550" class="gl"></line>
+<line x1="0" y1="575" x2="975" y2="575" class="gl"></line>
+<g id="g0" class="hid">
+<rect x="100" y="100" width="50" height="50" class="shp fd d0"></rect>
+<text x="190.0" y="130.0" class="tp st fd d1">2 squares = 1 inch</text>
+<rect x="100" y="187.5" width="25" height="25" class="shp fd d2"></rect>
+<text x="190.0" y="205.0" class="tp st fd d3">1 square = 1/2 inch</text>
+</g>
+<g id="g1" class="hid">
+<circle cx="100" cy="100" r="4" class="dot fd d0"></circle>
+<path d="M100 100 H600 V250 H100 Z" class="ln ol dr d1"></path>
+<line x1="100" y1="82.5" x2="600" y2="82.5" class="ln hp fd d2"></line>
+<polygon points="100,82.5 108.00,79.50 108.00,85.50" class="ahp fd d2"></polygon>
+<polygon points="600,82.5 592.00,85.50 592.00,79.50" class="ahp fd d2"></polygon>
+<text x="350.0" y="76.25" class="tp mid fd d2">20 squares = 10"</text>
+<line x1="65.0" y1="100" x2="65.0" y2="250" class="ln hp fd d3"></line>
+<polygon points="65.0,100 68.00,108.00 62.00,108.00" class="ahp fd d3"></polygon>
+<polygon points="65.0,250 62.00,242.00 68.00,242.00" class="ahp fd d3"></polygon>
+<text x="57.5" y="179.5" class="tp end fd d3">6 squares</text>
+</g>
+<g id="g2" class="hid">
+<line x1="85.0" y1="175" x2="615.0" y2="175" class="ln cl fd d0"></line>
+<line x1="630.0" y1="100" x2="630.0" y2="175" class="ln hp fd d1"></line>
+<polygon points="630.0,100 633.00,108.00 627.00,108.00" class="ahp fd d1"></polygon>
+<polygon points="630.0,175 627.00,167.00 633.00,167.00" class="ahp fd d1"></polygon>
+<text x="640.0" y="142.0" class="tp st fd d1">3 squares</text>
+</g>
+<g id="g3" class="hid">
+<line x1="191.25" y1="175" x2="208.75" y2="175" class="ln ol fd d1"></line>
+<line x1="200" y1="166.25" x2="200" y2="183.75" class="ln ol fd d1"></line>
+<line x1="341.25" y1="175" x2="358.75" y2="175" class="ln ol fd d2"></line>
+<line x1="350" y1="166.25" x2="350" y2="183.75" class="ln ol fd d2"></line>
+<line x1="491.25" y1="175" x2="508.75" y2="175" class="ln ol fd d3"></line>
+<line x1="500" y1="166.25" x2="500" y2="183.75" class="ln ol fd d3"></line>
+<line x1="100" y1="157.5" x2="200" y2="157.5" class="ln hp fd d1"></line>
+<polygon points="100,157.5 108.00,154.50 108.00,160.50" class="ahp fd d1"></polygon>
+<polygon points="200,157.5 192.00,160.50 192.00,154.50" class="ahp fd d1"></polygon>
+<text x="150.0" y="151.25" class="tp mid fd d1">4</text>
+<line x1="200" y1="157.5" x2="350" y2="157.5" class="ln hp fd d2"></line>
+<polygon points="200,157.5 208.00,154.50 208.00,160.50" class="ahp fd d2"></polygon>
+<polygon points="350,157.5 342.00,160.50 342.00,154.50" class="ahp fd d2"></polygon>
+<text x="275.0" y="151.25" class="tp mid fd d2">6</text>
+<line x1="350" y1="157.5" x2="500" y2="157.5" class="ln hp fd d3"></line>
+<polygon points="350,157.5 358.00,154.50 358.00,160.50" class="ahp fd d3"></polygon>
+<polygon points="500,157.5 492.00,160.50 492.00,154.50" class="ahp fd d3"></polygon>
+<text x="425.0" y="151.25" class="tp mid fd d3">6</text>
+<line x1="500" y1="157.5" x2="600" y2="157.5" class="ln hp fd d4"></line>
+<polygon points="500,157.5 508.00,154.50 508.00,160.50" class="ahp fd d4"></polygon>
+<polygon points="600,157.5 592.00,160.50 592.00,154.50" class="ahp fd d4"></polygon>
+<text x="550.0" y="151.25" class="tp mid fd d4">4</text>
+</g>
+<g id="g4" class="hid">
+<line x1="188.75" y1="125" x2="211.25" y2="125" class="ln ol fd d0"></line>
+<line x1="188.75" y1="225" x2="211.25" y2="225" class="ln ol fd d0"></line>
+<line x1="150" y1="163.75" x2="150" y2="186.25" class="ln ol fd d0"></line>
+<line x1="250" y1="163.75" x2="250" y2="186.25" class="ln ol fd d0"></line>
+<circle cx="200" cy="175" r="50" class="ln ol dr d4"></circle>
+<line x1="338.75" y1="125" x2="361.25" y2="125" class="ln ol fd d1"></line>
+<line x1="338.75" y1="225" x2="361.25" y2="225" class="ln ol fd d1"></line>
+<line x1="300" y1="163.75" x2="300" y2="186.25" class="ln ol fd d1"></line>
+<line x1="400" y1="163.75" x2="400" y2="186.25" class="ln ol fd d1"></line>
+<circle cx="350" cy="175" r="50" class="ln ol dr d5"></circle>
+<line x1="488.75" y1="125" x2="511.25" y2="125" class="ln ol fd d2"></line>
+<line x1="488.75" y1="225" x2="511.25" y2="225" class="ln ol fd d2"></line>
+<line x1="450" y1="163.75" x2="450" y2="186.25" class="ln ol fd d2"></line>
+<line x1="550" y1="163.75" x2="550" y2="186.25" class="ln ol fd d2"></line>
+<circle cx="500" cy="175" r="50" class="ln ol dr d6"></circle>
+<line x1="203.75" y1="175" x2="246.25" y2="175" class="ln hp fd d0"></line>
+<polygon points="246.25,175 238.25,178.00 238.25,172.00" class="ahp fd d0"></polygon>
+<line x1="200" y1="171.25" x2="200" y2="130.0" class="ln hp fd d0"></line>
+<polygon points="200,130.0 203.00,138.00 197.00,138.00" class="ahp fd d0"></polygon>
+<text x="225" y="190.0" class="tp mid fd d0">2</text>
+<text x="190.0" y="155.0" class="tp mid fd d0">2</text>
+</g>
+<g id="g5" class="hid">
+<line x1="100" y1="257.5" x2="100" y2="382.5" class="ln cn dr d0"></line>
+<line x1="600" y1="257.5" x2="600" y2="382.5" class="ln cn dr d1"></line>
+<line x1="150" y1="175" x2="150" y2="382.5" class="ln cn dr d2"></line>
+<line x1="250" y1="175" x2="250" y2="382.5" class="ln cn dr d2"></line>
+<line x1="300" y1="175" x2="300" y2="382.5" class="ln cn dr d3"></line>
+<line x1="400" y1="175" x2="400" y2="382.5" class="ln cn dr d3"></line>
+<line x1="450" y1="175" x2="450" y2="382.5" class="ln cn dr d4"></line>
+<line x1="550" y1="175" x2="550" y2="382.5" class="ln cn dr d4"></line>
+</g>
+<g id="g6" class="hid">
+<path d="M100 325 H600 V362.5 H100 Z" class="ln ol dr d1"></path>
+<line x1="630.0" y1="250" x2="630.0" y2="325" class="ln hp fd d0"></line>
+<polygon points="630.0,250 633.00,258.00 627.00,258.00" class="ahp fd d0"></polygon>
+<polygon points="630.0,325 627.00,317.00 633.00,317.00" class="ahp fd d0"></polygon>
+<text x="640.0" y="292.0" class="tp st fd d0">skip 3 squares</text>
+<line x1="630.0" y1="325" x2="630.0" y2="362.5" class="ln hp fd d2"></line>
+<polygon points="630.0,325 633.00,333.00 627.00,333.00" class="ahp fd d2"></polygon>
+<polygon points="630.0,362.5 627.00,354.50 633.00,354.50" class="ahp fd d2"></polygon>
+<text x="640.0" y="348.25" class="tp st fd d2">1 1/2 squares</text>
+</g>
+<g id="g7" class="hid">
+<line x1="150" y1="325" x2="150" y2="343.75" class="ln hd fd d1"></line>
+<line x1="250" y1="325" x2="250" y2="343.75" class="ln hd fd d1"></line>
+<line x1="150" y1="343.75" x2="250" y2="343.75" class="ln hd fd d1"></line>
+<line x1="200.0" y1="313.75" x2="200.0" y2="353.75" class="ln cl fd d4"></line>
+<line x1="300" y1="325" x2="300" y2="343.75" class="ln hd fd d2"></line>
+<line x1="400" y1="325" x2="400" y2="343.75" class="ln hd fd d2"></line>
+<line x1="300" y1="343.75" x2="400" y2="343.75" class="ln hd fd d2"></line>
+<line x1="350.0" y1="313.75" x2="350.0" y2="353.75" class="ln cl fd d4"></line>
+<line x1="450" y1="325" x2="450" y2="343.75" class="ln hd fd d3"></line>
+<line x1="550" y1="325" x2="550" y2="343.75" class="ln hd fd d3"></line>
+<line x1="450" y1="343.75" x2="550" y2="343.75" class="ln hd fd d3"></line>
+<line x1="500.0" y1="313.75" x2="500.0" y2="353.75" class="ln cl fd d4"></line>
+<text x="200" y="307.5" class="tp mid fd d1">halfway down</text>
+</g>
+<g id="g8" class="hid">
+<line x1="607.5" y1="325" x2="750" y2="325" class="ln hp fd d0"></line>
+<line x1="607.5" y1="362.5" x2="750" y2="362.5" class="ln hp fd d0"></line>
+<path d="M750 325 H900 V362.5 H750 Z" class="ln ol dr d1"></path>
+<text x="675" y="315.0" class="tp mid fd d0">6 squares</text>
+<line x1="750" y1="385.0" x2="900" y2="385.0" class="ln hp fd d2"></line>
+<polygon points="750,385.0 758.00,382.00 758.00,388.00" class="ahp fd d2"></polygon>
+<polygon points="900,385.0 892.00,388.00 892.00,382.00" class="ahp fd d2"></polygon>
+<text x="825.0" y="405.0" class="tp mid fd d2">6 squares</text>
+</g>
+<g id="g9" class="hid">
+<line x1="775" y1="325" x2="775" y2="343.75" class="ln hd fd d1"></line>
+<line x1="875" y1="325" x2="875" y2="343.75" class="ln hd fd d1"></line>
+<line x1="775" y1="343.75" x2="875" y2="343.75" class="ln hd fd d1"></line>
+<line x1="825" y1="313.75" x2="825" y2="372.5" class="ln cl fd d2"></line>
+<text x="825" y="392.5" class="tp mid fd d0">1 + 4 + 1 squares</text>
+</g>
+<g id="g10" class="hid">
+<line x1="100" y1="92.5" x2="100" y2="27.5" class="ln dm fd d0"></line>
+<line x1="600" y1="92.5" x2="600" y2="27.5" class="ln dm fd d0"></line>
+<line x1="100" y1="35.0" x2="600" y2="35.0" class="ln dm fd d0"></line>
+<polygon points="100,35.0 108.00,32.00 108.00,38.00" class="ah fd d0"></polygon>
+<polygon points="600,35.0 592.00,38.00 592.00,32.00" class="ah fd d0"></polygon>
+<text x="350.0" y="28.75" class="tx mid fd d0">10"</text>
+<line x1="200" y1="115.0" x2="200" y2="63.75" class="ln dm fd d1"></line>
+<line x1="350" y1="115.0" x2="350" y2="63.75" class="ln dm fd d1"></line>
+<line x1="500" y1="115.0" x2="500" y2="63.75" class="ln dm fd d1"></line>
+<line x1="100" y1="71.25" x2="200" y2="71.25" class="ln dm fd d1"></line>
+<polygon points="100,71.25 108.00,68.25 108.00,74.25" class="ah fd d1"></polygon>
+<polygon points="200,71.25 192.00,74.25 192.00,68.25" class="ah fd d1"></polygon>
+<text x="150.0" y="65.0" class="tx mid fd d1">2"</text>
+<line x1="200" y1="71.25" x2="350" y2="71.25" class="ln dm fd d2"></line>
+<polygon points="200,71.25 208.00,68.25 208.00,74.25" class="ah fd d2"></polygon>
+<polygon points="350,71.25 342.00,74.25 342.00,68.25" class="ah fd d2"></polygon>
+<text x="275.0" y="65.0" class="tx mid fd d2">3"</text>
+<line x1="350" y1="71.25" x2="500" y2="71.25" class="ln dm fd d3"></line>
+<polygon points="350,71.25 358.00,68.25 358.00,74.25" class="ah fd d3"></polygon>
+<polygon points="500,71.25 492.00,74.25 492.00,68.25" class="ah fd d3"></polygon>
+<text x="425.0" y="65.0" class="tx mid fd d3">3"</text>
+<line x1="500" y1="71.25" x2="600" y2="71.25" class="ln dm fd d4"></line>
+<polygon points="500,71.25 508.00,68.25 508.00,74.25" class="ah fd d4"></polygon>
+<polygon points="600,71.25 592.00,74.25 592.00,68.25" class="ah fd d4"></polygon>
+<text x="550.0" y="65.0" class="tx mid fd d4">2"</text>
+<line x1="92.5" y1="100" x2="50.0" y2="100" class="ln dm fd d5"></line>
+<line x1="92.5" y1="250" x2="50.0" y2="250" class="ln dm fd d5"></line>
+<line x1="57.5" y1="100" x2="57.5" y2="250" class="ln dm fd d5"></line>
+<polygon points="57.5,100 60.50,108.00 54.50,108.00" class="ah fd d5"></polygon>
+<polygon points="57.5,250 54.50,242.00 60.50,242.00" class="ah fd d5"></polygon>
+<text x="31.25" y="179.5" class="tx mid fd d5">3"</text>
+<line x1="538.3" y1="142.86" x2="625" y2="130.0" class="ln dm fd d6"></line>
+<line x1="625" y1="130.0" x2="637.5" y2="130.0" class="ln dm fd d6"></line>
+<polygon points="538.3,142.86 545.77,138.72 546.65,144.65" class="ah fd d6"></polygon>
+<text x="642.5" y="134.5" class="tx st fd d6">Ø2" HOLES, 3 PLACES</text>
+</g>
+<g id="g11" class="hid">
+<line x1="92.5" y1="325" x2="50.0" y2="325" class="ln dm fd d0"></line>
+<line x1="92.5" y1="362.5" x2="50.0" y2="362.5" class="ln dm fd d0"></line>
+<line x1="57.5" y1="325" x2="57.5" y2="362.5" class="ln dm fd d0"></line>
+<polygon points="57.5,325 60.50,333.00 54.50,333.00" class="ah fd d0"></polygon>
+<polygon points="57.5,362.5 54.50,354.50 60.50,354.50" class="ah fd d0"></polygon>
+<text x="31.25" y="348.25" class="tx mid fd d0">3/4"</text>
+<line x1="525" y1="311.25" x2="525" y2="343.75" class="ln dm fd d2"></line>
+<polygon points="525,325 528.00,333.00 522.00,333.00" class="ah fd d2"></polygon>
+<polygon points="525,343.75 522.00,335.75 528.00,335.75" class="ah fd d2"></polygon>
+<text x="525" y="306.25" class="tx mid fd d2">3/8" DEEP</text>
+<line x1="750" y1="370.0" x2="750" y2="412.5" class="ln dm fd d3"></line>
+<line x1="900" y1="370.0" x2="900" y2="412.5" class="ln dm fd d3"></line>
+<line x1="750" y1="405.0" x2="900" y2="405.0" class="ln dm fd d3"></line>
+<polygon points="750,405.0 758.00,402.00 758.00,408.00" class="ah fd d3"></polygon>
+<polygon points="900,405.0 892.00,408.00 892.00,402.00" class="ah fd d3"></polygon>
+<text x="825.0" y="398.75" class="tx mid fd d3">3"</text>
+<line x1="850" y1="311.25" x2="850" y2="343.75" class="ln dm fd d4"></line>
+<polygon points="850,325 853.00,333.00 847.00,333.00" class="ah fd d4"></polygon>
+<polygon points="850,343.75 847.00,335.75 853.00,335.75" class="ah fd d4"></polygon>
+<text x="850" y="306.25" class="tx mid fd d4">3/8" DEEP</text>
+</g>
+<g id="g12" class="hid">
+<text x="350" y="293.75" class="tv mid fd d0">TOP VIEW</text>
+<text x="350" y="402.5" class="tv mid fd d1">FRONT VIEW</text>
+<text x="825" y="442.5" class="tv mid fd d2">SIDE VIEW</text>
+<path d="M637.5 480.0 H962.5 V565.0 H637.5 Z" class="ln ol dr d3"></path>
+<line x1="637.5" y1="522.5" x2="962.5" y2="522.5" class="ln dm fd d4"></line>
+<line x1="800" y1="480.0" x2="800" y2="565.0" class="ln dm fd d4"></line>
+<text x="645.0" y="498.75" class="tb st fd d5">PROJECT</text>
+<text x="645.0" y="513.75" class="tx st fd d5">CANDLE HOLDER</text>
+<text x="807.5" y="498.75" class="tb st fd d5">NAME</text>
+<text x="807.5" y="513.75" class="tx st fd d5">_______________</text>
+<text x="645.0" y="541.25" class="tb st fd d6">SCALE</text>
+<text x="645.0" y="556.25" class="tx st fd d6">1 SQUARE = 1/2"</text>
+<text x="807.5" y="541.25" class="tb st fd d6">DATE</text>
+<text x="807.5" y="556.25" class="tx st fd d6">_______________</text>
+</g>
+</svg>
+      </div>
+      <div class="controls">
+        <button type="button" class="btn" id="back">Back</button>
+        <button type="button" class="btn primary" id="next">Next step</button>
+        <button type="button" class="btn" id="replay">Replay step</button>
+        <button type="button" class="btn" id="play">Auto-play</button>
+        <div class="dots" id="dots"></div>
+      </div>
+      <div class="keys">Tip: the left and right arrow keys also move between steps.</div>
+    </section>
+  </main>
+</div>
+<script>
+(function () {
+  var STEPS = [
+      { title: 'Get set up', lines: ['Turn your grid paper sideways, so it is wider than it is tall.', 'Our scale is 1 square = 1/2 inch. So 2 squares = 1 inch.', 'Draw light lines first. You will darken them at the very end.', 'Use the cheat sheet any time you need to change inches into squares.'], count: '1 inch = 2 squares', check: 'Look at the blue boxes on the grid. The big one is 1 inch. The small one is 1/2 inch.' },
+      { title: 'Draw the top view', lines: ['The top view is what you see looking straight down on the board.', 'Count 4 squares in from the left and 4 squares down from the top. Make a dot.', 'From the dot, draw a line 20 squares to the right. That is 10 inches.', 'Go down 6 squares (3 inches) and finish the rectangle.'], count: '10" = 20 squares, 3" = 6 squares', check: 'Your rectangle is 20 squares long and 6 squares tall.' },
+      { title: 'Draw the centre line', lines: ['The centre line runs down the middle of the board, the long way.', 'Count 3 squares down from the top edge. That is halfway across the 6 squares.', 'Draw it as a dashed line.', 'Let it stick out about half a square past each end.'], count: 'halfway = 3 squares', check: 'There are 3 squares above your centre line and 3 squares below it.' },
+      { title: 'Mark the hole centres', lines: ['Each hole gets drilled right on the centre line.', 'Start at the left end. Count 4 squares and make a small +.', 'Count 6 more squares and make a +. Then 6 more and make a +.', 'You should have exactly 4 squares left over at the right end.'], count: '4 + 6 + 6 + 4 = 20 squares', check: 'The middle + is exactly 10 squares from each end.' },
+      { title: 'Mark and draw the holes', lines: ['The holes are 2 inches across. That is 4 squares, so the edge of each hole is 2 squares out from its +.', 'From each +, count 2 squares up, down, left and right. Make a small mark at each spot.', 'Those 4 marks show exactly where the edge of the hole will be. Join them with a smooth, round curve by hand.', 'Have a compass? Open it to 2 squares, put the point on the +, and spin the circle instead.'], count: '2 squares out from the + in every direction', check: 'Each circle stays 1 square away from the top and bottom edges, with 2 squares between holes.' },
+      { title: 'Drop line-up lines', lines: ['The front view goes under the top view, and it has to line up.', 'Draw very light lines straight down from both ends of the board.', 'Draw light lines down from the left and right marks of every hole, too.', 'Go about 5 squares below the top view. These are helper lines, so keep them faint.'], count: '8 light lines', check: 'Every line goes straight down, right on a grid line.' },
+      { title: 'Draw the front view', lines: ['The front view is what you see looking at the long side of the board.', 'Skip 3 squares below the top view.', 'The board is 3/4 inch thick. That is 1 and a half squares.', 'Draw a rectangle between the two end lines, 1 and a half squares tall.'], count: '3/4" = 1 1/2 squares', check: 'The front view is exactly as long as the top view, and its ends sit on your line-up lines.' },
+      { title: 'Show the hidden holes', lines: ['From the front, the holes are inside the wood. You cannot see them.', 'Anything you cannot see gets drawn with dashed lines.', 'The holes are 3/8 inch deep. That is 3/4 of a square, exactly halfway down the board.', 'Use the line-up lines to draw a dashed box for each hole. Add a centre line through each one.'], count: '3/8" = 3/4 square = halfway down', check: 'Each dashed box is 4 squares wide and goes only halfway down. The holes do not go through!' },
+      { title: 'Draw the side view', lines: ['The side view is what you see looking at the right end of the board.', 'Leave 6 squares of space to the right of the front view.', 'Use the same top and bottom lines as the front view so they line up.', 'The end is 3 inches wide (6 squares) and 1 and a half squares tall.'], count: '3" = 6 squares', check: 'The top and bottom of the side view line up with the front view.' },
+      { title: 'Show the hidden hole', lines: ['From the end, all 3 holes sit one behind the other. You only draw one.', 'The hole is 4 squares wide, so it starts 1 square in from each side.', 'Draw a dashed box that goes halfway down, just like the front view.', 'Add a centre line down the middle.'], count: '1 + 4 + 1 = 6 squares', check: 'The dashed box is centred, with 1 square of wood on each side.' },
+      { title: 'Dimension the top view', lines: ['Dimensions show the REAL size in inches, not the number of squares.', 'Draw thin extension lines out from the edges. Then draw a dimension line with an arrow at each end.', 'Write the length (10") and the width (3").', 'Show where the hole centres go (2", 3", 3", 2") and add a note for the hole size. The symbol Ø means diameter (the distance across).'], count: 'write real inches, not squares', check: 'The hole spacing adds up: 2 + 3 + 3 + 2 = 10 inches.' },
+      { title: 'Add thickness and hole depths', lines: ['On the front view, add the thickness: 3/4".', 'Show the hole depth with a small arrow from the top surface down to the dashed line. Label it 3/8" DEEP.', 'On the side view, add the width (3") and the hole depth (3/8" DEEP).', 'Keep the numbers outside the drawing when you can, so they are easy to read.'], count: '3/4" thick, 3/8" deep', check: 'Both depth labels say 3/8", which is half of the 3/4" thickness.' },
+      { title: 'Label and finish', lines: ['Write TOP VIEW, FRONT VIEW and SIDE VIEW under each drawing.', 'Fill in the title block with your name, the project, the scale and the date.', 'Go over the outline of the board with a darker, firmer line.', 'Leave the line-up lines light. Erase any smudges.'], count: 'Scale: 1 square = 1/2"', check: 'Could someone build your candle holder using only your drawing? If yes, you are done!' }
+    ];
+  var SECONDS_PER_STEP = 9;
+  var step = 0, timer = null;
+  var groups = [];
+  for (var i = 0; i < STEPS.length; i++) groups.push(document.getElementById('g' + i));
+  var $ = function (id) { return document.getElementById(id); };
+  var dotsEl = $('dots');
+  var dots = STEPS.map(function (s, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'dot';
+    b.textContent = String(i);
+    b.setAttribute('aria-label', 'Go to step ' + i + ': ' + s.title);
+    b.addEventListener('click', function () { stop(); go(i); });
+    dotsEl.appendChild(b);
+    return b;
+  });
+
+  function setGroups(replay) {
+    groups.forEach(function (g, i) {
+      g.setAttribute('class', i < step ? 'done' : (i === step ? 'now' : 'hid'));
+    });
+    if (replay) {
+      var g = groups[step];
+      g.setAttribute('class', 'hid');
+      void g.getBoundingClientRect();
+      requestAnimationFrame(function () { g.setAttribute('class', 'now'); });
+    }
+  }
+  function render() {
+    var s = STEPS[step];
+    $('num').textContent = String(step);
+    $('of').textContent = step === 0 ? 'BEFORE YOU START' : 'STEP ' + step + ' OF ' + (STEPS.length - 1);
+    $('title').textContent = s.title;
+    var ol = $('lines');
+    ol.innerHTML = '';
+    s.lines.forEach(function (l) { var li = document.createElement('li'); li.textContent = l; ol.appendChild(li); });
+    $('count').textContent = 'Count it: ' + s.count;
+    $('check').innerHTML = '';
+    var strong = document.createElement('strong'); strong.textContent = 'Check: ';
+    $('check').appendChild(strong);
+    $('check').appendChild(document.createTextNode(s.check));
+    $('back').disabled = step === 0;
+    $('next').disabled = step === STEPS.length - 1;
+    dots.forEach(function (d, i) {
+      d.className = 'dot' + (i === step ? ' active' : (i < step ? ' past' : ''));
+      if (i === step) d.setAttribute('aria-current', 'step'); else d.removeAttribute('aria-current');
+    });
+  }
+  function go(n) {
+    var s = Math.max(0, Math.min(STEPS.length - 1, n));
+    var same = s === step;
+    step = s;
+    setGroups(same);
+    render();
+  }
+  function stop() {
+    if (timer) { clearInterval(timer); timer = null; }
+    $('play').textContent = 'Auto-play';
+  }
+  function play() {
+    if (step >= STEPS.length - 1) go(0);
+    $('play').textContent = 'Pause';
+    timer = setInterval(function () {
+      if (step >= STEPS.length - 1) { stop(); return; }
+      go(step + 1);
+    }, SECONDS_PER_STEP * 1000);
+  }
+  $('back').addEventListener('click', function () { stop(); go(step - 1); });
+  $('next').addEventListener('click', function () { stop(); go(step + 1); });
+  $('replay').addEventListener('click', function () { setGroups(true); });
+  $('play').addEventListener('click', function () { if (timer) stop(); else play(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+    if (e.key === 'ArrowRight') { stop(); go(step + 1); }
+    else if (e.key === 'ArrowLeft') { stop(); go(step - 1); }
+  });
+  setGroups(false);
+  render();
+})();
+</script>
+</body>
+</html>
